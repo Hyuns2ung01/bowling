@@ -20,12 +20,15 @@ app.get('/history', (req, res) => {
 });
 
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'rootroot',
-    database: 'bowling'
-});
+    host: process.env.mysql - 3dc51949- scorpion071111 - 1379.c.aivencloud.com
 
+    ,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    ssl: { rejectUnauthorized: false } // 클라우드 DB 접속 시 필수 설정
+});
 // 점수 저장 로직
 app.post('/api/save-score', (req, res) => {
     const { match_date, player_name, game_1, game_2, game_3 } = req.body;
