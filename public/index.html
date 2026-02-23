@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>🎳 볼링 동아리 매니저</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header-top" style="justify-content: space-between; align-items: center;">
+            <a href="/admin.html" class="admin-link">🔐</a>
+            <a href="/history" class="history-link">
+                전체 기록 보러가기
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+            </a>
+        </div>
+        <section class="section" style="padding: 15px 0;">
+            <h2 style="justify-content: center; margin-bottom: 15px;">🏆 명예의 전당</h2>
+
+            <div class="slider-container">
+                <div class="slider-wrapper" id="rankSlider">
+                    <div class="slide-item">
+                        <div class="stats-grid">
+                            <div class="stat-card" style="border-top: 4px solid var(--primary);">
+                                <div class="stat-label">⚡ 주간 에버리지</div>
+                                <div id="wAvgName" class="stat-name">-</div>
+                                <div id="wAvgVal" class="stat-avg">0.00</div>
+                            </div>
+                            <div class="stat-card" style="border-top: 4px solid #e74c3c;">
+                                <div class="stat-label">⚡ 주간 하이점수</div>
+                                <div id="wHighName" class="stat-name">-</div>
+                                <div id="wHighVal" class="stat-avg" style="color:#e74c3c">0점</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slide-item">
+                        <div class="stats-grid">
+                            <div class="stat-card" style="border-top: 4px solid var(--secondary);">
+                                <div class="stat-label">👑 월간 에버리지</div>
+                                <div id="mAvgName" class="stat-name">-</div>
+                                <div id="mAvgVal" class="stat-avg" style="color:var(--secondary)">0.00</div>
+                            </div>
+                            <div class="stat-card" style="border-top: 4px solid #9b59b6;">
+                                <div class="stat-label">👑 월간 하이점수</div>
+                                <div id="mHighName" class="stat-name">-</div>
+                                <div id="mHighVal" class="stat-avg" style="color:#9b59b6">0점</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="section">
+            <h2>📝 점수 기록하기</h2>
+            <div class="input-group">
+                <label>이름</label>
+                <input type="text" id="playerName" placeholder="성함을 입력해주세요">
+            </div>
+            <div class="input-group">
+                <label>날짜</label>
+                <input type="date" id="matchDate">
+            </div>
+            <div class="input-group">
+                <label>게임 점수 (1~3회차)</label>
+                <div class="game-inputs">
+                    <input type="number" id="g1" pattern="\d*" placeholder="1">
+                    <input type="number" id="g2" pattern="\d*" placeholder="2">
+                    <input type="number" id="g3" pattern="\d*" placeholder="3">
+                </div>
+            </div>
+            <button onclick="submitData()">점수 등록</button>
+
+            <div id="resultArea" class="section"
+                style="display:none; margin-top: 15px; background: #eefbee; text-align: center; border: 2px solid #28a745;">
+                <h3 style="margin: 0; color: #155724; font-size: 0.9rem;">✅ 기록 완료!</h3>
+                <div id="avgDisplay" style="font-size: 1.8rem; font-weight: 800; color: #28a745; margin: 10px 0;">0.00
+                </div>
+                <p style="margin: 0; color: #666; font-size: 0.85rem;">오늘의 평균 점수입니다.</p>
+            </div>
+
+
+        </section>
+
+        <script src="script.js"></script>
+
+        <div class="donation-wrapper">
+            <button class="coffee-btn" onclick="toggleDonation()">
+                ☕ <span>커피 한 잔 후원하기</span>
+            </button>
+
+            <div id="donationModal" class="donation-modal">
+                <div class="modal-content">
+                    <h3>☕ 감사합니다 커피 ☕</h3>
+                    <p>오늘도 일용할 양식을 주셔서 감사합니다.</p>
+                    <div class="account-box">
+                        <strong>KB 국민은행</strong><br>
+                        <span id="accountNum">220401-04-215636</span>
+                    </div>
+                    <button class="copy-btn" onclick="copyAccount()">계좌번호 복사하기</button>
+                    <button class="close-btn" onclick="toggleDonation()">닫기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

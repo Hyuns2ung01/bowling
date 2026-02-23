@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>🎳 볼링 기록 보관소</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header-top" style="justify-content: space-between; align-items: center;">
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <a href="/admin.html" class="admin-link">🔐</a>
+                <a href="/" class="back-link">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    입력하기
+                </a>
+            </div>
+            <h2 style="margin:0; border:none; font-size: 1.1rem;">📅 일별 기록 순위</h2>
+        </div>
+
+        <div class="section" style="padding: 15px;">
+            <label>조회 날짜 선택</label>
+            <input type="date" id="viewDate" onchange="loadDailyData()">
+        </div>
+
+        <div class="section">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>순위</th>
+                        <th>이름</th>
+                        <th>1/2/3</th>
+                        <th>평균</th>
+                    </tr>
+                </thead>
+                <tbody id="dailyRankBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('viewDate').value = new Date().toISOString().split('T')[0];
+
+        let isAdmin = false;
+
+        async function checkAdmin() {
+            try {
+                const res = await fetch('/api/admin/check');
+                const data = await res.json();
+                isAdmin = data.isAdmin;
+                if (isAdmin) {
+                    const header = document.querySelector('.header-top');
+                    const logoutBtn = document.createElement('button');
+                    logoutBtn.className = 'admin-logout';
+                    logoutBtn.innerText = '로그아웃';
+                    logoutBtn.onclick = logout;
+                    header.appendChild(logoutBtn);
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        async function logout() {
+            await fetch('/api/admin/logout', { method: 'POST' });
+            location.reload();
+        }
+
+        async function loadDailyData() {
+            const date = document.getElementById('viewDate').value;
+            try {
+                const res = await fetch(`/api/ranking/daily?date=${date}`);
+                const data = await res.json();
+
+                const tbody = document.getElementById('dailyRankBody');
+                tbody.innerHTML = '';
+
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="padding:40px; color:#999; text-align:center;">기록이 없습니다.</td></tr>';
+                    return;
+                }
+
+                data.forEach((row, index) => {
+                    let medalClass = '';
+                    if (index === 0) medalClass = 'rank-gold';
+                    else if (index === 1) medalClass = 'rank-silver';
+                    else if (index === 2) medalClass = 'rank-bronze';
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                    <td>
+                        <span class="rank-badge ${medalClass}">${index + 1}</span>
+                        ${isAdmin ? `
+                        <div class="admin-actions">
+                            <button class="edit-btn" onclick="openEditModal(${row.id}, '${row.player_name}', ${row.game_1}, ${row.game_2}, ${row.game_3})">수정</button>
+                            <button class="del-btn" onclick="deleteRecord(${row.id})">삭제</button>
+                        </div>` : ''}
+                    </td>
+                    <td><strong>${row.player_name}</strong></td>
+                    <td style="color:#666; font-size:0.85rem;">${row.game_1}/${row.game_2}/${row.game_3}</td>
+                    <td style="color:var(--primary); font-weight:800;">${parseFloat(row.daily_average).toFixed(2)}</td>
+                `;
+                    tbody.appendChild(tr);
+                });
+            } catch (e) {
+                alert("데이터를 불러오지 못했습니다. 서버를 확인하세요.");
+            }
+        }
+
+        async function deleteRecord(id) {
+            if (!confirm("정말 삭제하시겠습니까?")) return;
+            const res = await fetch('/api/admin/delete-score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id })
+            });
+            if (res.ok) {
+                alert("삭제되었습니다.");
+                loadDailyData();
+            } else {
+                alert("삭제 실패");
+            }
+        }
+
+        function openEditModal(id, name, g1, g2, g3) {
+            const newName = prompt("이름:", name);
+            if (newName === null) return;
+            const newG1 = prompt("1회차 점수:", g1);
+            if (newG1 === null) return;
+            const newG2 = prompt("2회차 점수:", g2);
+            if (newG2 === null) return;
+            const newG3 = prompt("3회차 점수:", g3);
+            if (newG3 === null) return;
+
+            updateRecord(id, newName, newG1, newG2, newG3);
+        }
+
+        async function updateRecord(id, name, g1, g2, g3) {
+            const res = await fetch('/api/admin/update-score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, player_name: name, game_1: g1, game_2: g2, game_3: g3 })
+            });
+            if (res.ok) {
+                alert("수정되었습니다.");
+                loadDailyData();
+            } else {
+                alert("수정 실패");
+            }
+        }
+
+        (async () => {
+            await checkAdmin();
+            await loadDailyData();
+        })();
+    </script>
+</body>
+
+</html>

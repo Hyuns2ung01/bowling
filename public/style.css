@@ -1,0 +1,508 @@
+/* [1] 공통 변수 및 초기화 */
+:root {
+    --primary: #4a90e2;
+    --primary-dark: #357abd;
+    --secondary: #f1c40f;
+    --bg: #f4f7f9;
+    --white: #ffffff;
+    --text: #333333;
+    --gray: #888888;
+    --light-gray: #eeeeee;
+    --success: #28a745;
+}
+
+body {
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    background-color: var(--bg);
+    margin: 0;
+    padding: env(safe-area-inset-top) 15px env(safe-area-inset-bottom) 15px;
+    color: var(--text);
+    -webkit-text-size-adjust: 100%;
+}
+
+.container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+/* [2] 레이아웃 공통 섹션 */
+.section {
+    background: var(--white);
+    padding: 24px;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+}
+
+h2 {
+    margin: 0 0 18px 0;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* 명예의 전당 제목 중앙 정렬용 */
+    gap: 8px;
+}
+
+/* 슬라이더 전체 통로 */
+.slider-container {
+    width: 100%;
+    overflow: hidden;
+    /* 영역 밖 슬라이드는 숨김 */
+    position: relative;
+}
+
+/* 슬라이드를 가로로 길게 배치하는 박스 */
+.slider-wrapper {
+    display: flex;
+    width: 200%;
+    /* 슬라이드가 2개이므로 부모의 2배 */
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+}
+
+/* 개별 슬라이드 (주간 세트 하나, 월간 세트 하나) */
+.slide-item {
+    width: 50%;
+    /* 전체 200% 중 절반 = 실제 화면 100%를 의미 */
+    flex-shrink: 0;
+    /* 크기가 줄어들지 않도록 고정 */
+    padding: 0 15px;
+    /* 양옆 여백 */
+    box-sizing: border-box;
+}
+
+/* 카드 2개를 가로로 나열하는 그리드 */
+.stats-grid {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+}
+
+.stat-card {
+    flex: 1;
+    /* 카드 2개가 1:1 비율로 배치 */
+    min-width: 0;
+    background: #fff;
+    padding: 15px 10px;
+    border-radius: 16px;
+    border: 1px solid #eee;
+    text-align: center;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--gray);
+    margin-bottom: 6px;
+}
+
+.stat-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.stat-avg {
+    font-size: 0.95rem;
+    color: var(--primary);
+    font-weight: 800;
+}
+
+/* [5] 입력 폼 및 버튼 */
+.input-group {
+    margin-bottom: 16px;
+}
+
+label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #666;
+}
+
+input {
+    width: 100%;
+    height: 50px;
+    padding: 0 15px;
+    border: 2px solid #f0f0f0;
+    border-radius: 12px;
+    box-sizing: border-box;
+    font-size: 16px !important;
+    background: #fafafa;
+    transition: all 0.2s;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.1);
+}
+
+/* [5.1] 날짜 입력창 모바일 최적화 */
+input[type="date"] {
+    position: relative;
+    min-height: 50px;
+    padding: 12px 15px;
+    line-height: 1.2;
+    display: flex;
+    align-items: center;
+    -webkit-appearance: none;
+    appearance: none;
+    /* iOS 기본 쉐도우 제거 */
+    background: #fafafa;
+}
+
+/* iOS에서 날짜 텍스트가 잘리거나 정렬이 틀어지는 문제 수정 */
+input[type="date"]::-webkit-date-and-time-value {
+    height: 1.2em;
+    margin: 0;
+}
+
+/* 캘린더 아이콘 스타일 유지 및 위치 조정 */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    z-index: 1;
+}
+
+.game-inputs {
+    display: flex;
+    gap: 10px;
+}
+
+button {
+    width: 100%;
+    height: 56px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-size: 1.05rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+    margin-top: 10px;
+}
+
+button:active {
+    transform: scale(0.97);
+}
+
+/* [6] 슬라이더 인디케이터 (점) */
+.slider-dots {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin: 0 4px;
+    background: #ddd;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+.dot.active {
+    background: var(--primary);
+    width: 20px;
+    border-radius: 10px;
+}
+
+/* [7] 기타 (히스토리 테이블 및 링크) */
+.history-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+}
+
+.history-table th {
+    font-size: 0.8rem;
+    color: var(--gray);
+    padding: 10px;
+}
+
+.history-table tr td {
+    background: #fff;
+    padding: 15px 10px;
+    text-align: center;
+    border-top: 1px solid #f8f9fa;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.history-table tr td:first-child {
+    border-radius: 12px 0 0 12px;
+    border-left: 1px solid #f8f9fa;
+}
+
+.history-table tr td:last-child {
+    border-radius: 0 12px 12px 0;
+    border-right: 1px solid #f8f9fa;
+}
+
+.rank-badge {
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    display: inline-block;
+    border-radius: 8px;
+    background: #eee;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.top-rank,
+.rank-gold {
+    background: #ffd700;
+    color: #333;
+}
+
+.rank-silver {
+    background: #c0c0c0;
+    color: #fff;
+}
+
+.rank-bronze {
+    background: #cd7f32;
+    color: #fff;
+}
+
+.nav-link {
+    text-align: right;
+    display: block;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+/* [8] 상단 링크 스타일링 개선 */
+.header-top {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 15px;
+}
+
+.history-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 16px;
+    background: rgba(74, 144, 226, 0.08);
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 0.85rem;
+    border-radius: 50px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.history-link:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.15);
+}
+
+.history-link svg {
+    transition: transform 0.3s;
+}
+
+.history-link:hover svg {
+    transform: translateX(3px);
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 12px;
+    background: rgba(136, 136, 136, 0.08);
+    color: var(--gray);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.85rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+}
+
+.back-link:hover {
+    background: #eee;
+    color: var(--text);
+    transform: translateX(-3px);
+}
+
+.back-link svg {
+    transition: transform 0.3s;
+}
+
+.back-link:hover svg {
+    transform: translateX(-2px);
+}
+
+/* [9] 모바일(360px 이하) 최적화 */
+@media (max-width: 360px) {
+    .header-top {
+        gap: 8px;
+    }
+
+    .history-link,
+    .back-link {
+        padding: 6px 12px;
+        font-size: 0.75rem;
+    }
+
+    h2 {
+        font-size: 1rem !important;
+    }
+}
+
+/* 후원 버튼 스타일 */
+.donation-wrapper {
+    position: fixed;
+    bottom: 30px;
+    right: 20px;
+    z-index: 999;
+}
+
+.coffee-btn {
+    background: #6f4e37;
+    /* 커피색 */
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 20px;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.coffee-btn:active {
+    transform: scale(0.9);
+}
+
+/* 모달(팝업) 스타일 */
+.donation-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 24px;
+    text-align: center;
+    width: 85%;
+    max-width: 320px;
+    animation: slideUp 0.3s ease-out;
+}
+
+.account-box {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 12px;
+    margin: 15px 0;
+    font-size: 1.1rem;
+    border: 1px dashed #ccc;
+}
+
+.copy-btn {
+    background: var(--primary);
+    margin-bottom: 8px;
+}
+
+.close-btn {
+    background: #999;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* 관리자 액션 버튼 */
+.admin-actions {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    margin-top: 8px;
+}
+
+.edit-btn,
+.del-btn {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+    font-weight: bold;
+    height: auto;
+    width: auto;
+    margin: 0;
+}
+
+.edit-btn {
+    background: #4a90e2;
+    color: white;
+}
+
+.del-btn {
+    background: #e74c3c;
+    color: white;
+}
+
+.admin-logout {
+    margin-left: auto;
+    background: #999;
+    padding: 8px 15px;
+    font-size: 0.8rem;
+    width: auto;
+    height: auto;
+    border-radius: 50px;
+}
+
+.admin-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 50%;
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.admin-link:hover {
+    background: rgba(0, 0, 0, 0.1);
+    transform: rotate(15deg) scale(1.1);
+}

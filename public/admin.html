@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎳 관리자 로그인</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="section" style="margin-top: 50px; text-align: center;">
+            <h2>🔐 관리자 로그인</h2>
+            <p style="color: #666; margin-bottom: 20px;">기록 수정 및 삭제 권한이 부여됩니다.</p>
+            <div class="input-group">
+                <label>비밀번호</label>
+                <input type="password" id="adminPassword" placeholder="비밀번호를 입력하세요">
+            </div>
+            <button onclick="login()">로그인</button>
+            <p id="errorMsg" style="color: #e74c3c; margin-top: 15px; font-size: 0.9rem; display: none;"></p>
+
+            <a href="/"
+                style="display: block; margin-top: 20px; color: #999; text-decoration: none; font-size: 0.85rem;">홈으로
+                돌아가기</a>
+        </div>
+    </div>
+
+    <script>
+        async function login() {
+            const password = document.getElementById('adminPassword').value;
+            const errorMsg = document.getElementById('errorMsg');
+
+            if (!password) {
+                errorMsg.innerText = "응 안돼, 돌아가 ㅋ";
+                errorMsg.style.display = "block";
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password })
+                });
+
+                if (res.ok) {
+                    alert("로그인 성공!");
+                    location.href = "/history";
+                } else {
+                    const data = await res.json();
+                    errorMsg.innerText = data.message || "로그인 실패";
+                    errorMsg.style.display = "block";
+                }
+            } catch (e) {
+                errorMsg.innerText = "서버 연결 오류";
+                errorMsg.style.display = "block";
+            }
+        }
+    </script>
+</body>
+
+</html>
