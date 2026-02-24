@@ -57,27 +57,35 @@ async function updateRankings() {
 
 // [4] 점수 저장 및 결과 표시 (단 하나로 통합된 버전)
 async function submitData() {
-    const g1 = parseInt(document.getElementById('game_1').value) || 0;
-const g2 = parseInt(document.getElementById('game_2').value) || 0;
-const g3 = parseInt(document.getElementById('game_3').value) || 0;
-
-if (g1 > 300 || g2 > 300 || g3 > 300) {
-    alert("볼링 점수는 300점을 넘을 수 없습니다. (퍼펙트 게임이 만점입니다!)");
-    return; // 서버로 전송하지 않고 종료
-}
     const name = document.getElementById('playerName').value;
     const date = document.getElementById('matchDate').value;
-    const g1 = document.getElementById('g1').value;
-    const g2 = document.getElementById('g2').value;
-    const g3 = document.getElementById('g3').value;
 
+    // 1. 점수 값 가져오기 (id가 g1, g2, g3라고 가정)
+    const val1 = document.getElementById('g1').value;
+    const val2 = document.getElementById('g2').value;
+    const val3 = document.getElementById('g3').value;
+
+    // 숫자로 변환
+    const g1 = parseInt(val1) || 0;
+    const g2 = parseInt(val2) || 0;
+    const g3 = parseInt(val3) || 0;
+
+    // 2. 유효성 검사 (이름 및 300점 제한)
     if (!name) return alert("이름을 입력해 주세요!");
 
-    // 유연한 게임 수 계산 (입력된 것만 필터링)
-    const scoreArray = [g1, g2, g3].filter(s => s !== "" && parseInt(s) >= 0);
+    if (g1 > 300 || g2 > 300 || g3 > 300) {
+        alert("볼링 점수는 300점을 넘을 수 없습니다. (퍼펙트 게임이 만점입니다!)");
+        return; 
+    }
+
+    // 3. 유연한 게임 수 계산 (실제 입력된 것만 필터링)
+    const scoreArray = [val1, val2, val3]
+        .filter(s => s !== "" && !isNaN(s))
+        .map(s => parseInt(s));
+
     if (scoreArray.length === 0) return alert("최소 1게임 이상의 점수를 입력해 주세요.");
 
-    const total = scoreArray.reduce((acc, cur) => acc + parseInt(cur), 0);
+    const total = scoreArray.reduce((acc, cur) => acc + cur, 0);
     const avg = (total / scoreArray.length).toFixed(2);
 
     try {
@@ -87,9 +95,9 @@ if (g1 > 300 || g2 > 300 || g3 > 300) {
             body: JSON.stringify({
                 player_name: name,
                 match_date: date,
-                game_1: g1 || 0,
-                game_2: g2 || 0,
-                game_3: g3 || 0,
+                game_1: g1,
+                game_2: g2,
+                game_3: g3,
                 daily_average: avg
             })
         });
@@ -98,14 +106,13 @@ if (g1 > 300 || g2 > 300 || g3 > 300) {
             const resultArea = document.getElementById('resultArea');
             const avgDisplay = document.getElementById('avgDisplay');
 
-            // 결과 화면 표시
             if (resultArea && avgDisplay) {
                 resultArea.style.display = 'block';
                 avgDisplay.innerText = `${avg}점`;
             }
 
-            // 즉시 상단 랭킹 업데이트
-            updateRankings();
+            alert("저장 성공!");
+            updateRankings(); // 상단 랭킹 업데이트
 
             // 입력칸 비우기
             document.getElementById('g1').value = '';
