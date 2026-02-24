@@ -188,47 +188,39 @@ app.post('/api/admin/delete-score', (req, res) => {
 
 // 명예의 전당 통합 데이터 API
 app.get('/api/ranking/hall-of-fame', (req, res) => {
-    // 1. 주간 랭킹: 월요일부터 시작하는 이번 주 데이터
+    // 한국 시간(KST)을 기준으로 오늘 날짜와 주차를 계산하도록 수정
     const weeklySql = `
         SELECT 
             (SELECT player_name FROM bowling_records 
-             WHERE YEARWEEK(match_date, 1) = YEARWEEK(CURDATE(), 1) 
+             WHERE YEARWEEK(match_date, 1) = YEARWEEK(CONVERT_TZ(NOW(), '+00:00', '+09:00'), 1) 
              ORDER BY daily_average DESC LIMIT 1) as week_avg_name,
             (SELECT MAX(daily_average) FROM bowling_records 
-             WHERE YEARWEEK(match_date, 1) = YEARWEEK(CURDATE(), 1)) as week_avg_val,
+             WHERE YEARWEEK(match_date, 1) = YEARWEEK(CONVERT_TZ(NOW(), '+00:00', '+09:00'), 1)) as week_avg_val,
             (SELECT player_name FROM bowling_records 
-             WHERE YEARWEEK(match_date, 1) = YEARWEEK(CURDATE(), 1) 
+             WHERE YEARWEEK(match_date, 1) = YEARWEEK(CONVERT_TZ(NOW(), '+00:00', '+09:00'), 1) 
              ORDER BY GREATEST(game_1, game_2, game_3) DESC LIMIT 1) as week_high_name,
             (SELECT MAX(GREATEST(game_1, game_2, game_3)) FROM bowling_records 
-             WHERE YEARWEEK(match_date, 1) = YEARWEEK(CURDATE(), 1)) as week_high_val;
+             WHERE YEARWEEK(match_date, 1) = YEARWEEK(CONVERT_TZ(NOW(), '+00:00', '+09:00'), 1)) as week_high_val;
     `;
 
-    // 2. 월간 랭킹: 이번 달 전체 데이터
     const monthlySql = `
         SELECT 
             (SELECT player_name FROM bowling_records 
-             WHERE DATE_FORMAT(match_date, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m') 
+             WHERE DATE_FORMAT(match_date, '%Y-%m') = DATE_FORMAT(CONVERT_TZ(NOW(), '+00:00', '+09:00'), '%Y-%m') 
              ORDER BY daily_average DESC LIMIT 1) as month_avg_name,
-            (SELECT MAX(daily_average) FROM bowling_records 
-             WHERE DATE_FORMAT(match_date, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m')) as month_avg_val,
+            (SELECT AVG(daily_average) FROM bowling_records 
+             WHERE DATE_FORMAT(match_date, '%Y-%m') = DATE_FORMAT(CONVERT_TZ(NOW(), '+00:00', '+09:00'), '%Y-%m') 
+             GROUP BY player_name ORDER BY AVG(daily_average) DESC LIMIT 1) as month_avg_val,
             (SELECT player_name FROM bowling_records 
-             WHERE DATE_FORMAT(match_date, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m') 
+             WHERE DATE_FORMAT(match_date, '%Y-%m') = DATE_FORMAT(CONVERT_TZ(NOW(), '+00:00', '+09:00'), '%Y-%m') 
              ORDER BY GREATEST(game_1, game_2, game_3) DESC LIMIT 1) as month_high_name,
             (SELECT MAX(GREATEST(game_1, game_2, game_3)) FROM bowling_records 
-             WHERE DATE_FORMAT(match_date, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m')) as month_high_val;
+             WHERE DATE_FORMAT(match_date, '%Y-%m') = DATE_FORMAT(CONVERT_TZ(NOW(), '+00:00', '+09:00'), '%Y-%m')) as month_high_val;
     `;
 
     db.query(weeklySql + monthlySql, (err, results) => {
-        if (err) {
-            console.error('랭킹 조회 에러:', err);
-            return res.status(500).send(err);
-        }
-        
-        // 데이터가 없을 경우를 대비한 방어 코드 추가
-        const weekly = results[0][0] || {};
-        const monthly = results[1][0] || {};
-        
-        res.json({ weekly, monthly });
+        if (err) return res.status(500).send(err);
+        res.json({ weekly: results[0][0], monthly: results[1][0] });
     });
 });
 
