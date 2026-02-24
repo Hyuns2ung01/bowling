@@ -52,6 +52,9 @@ db.query(createTableQuery, (err) => {
 // 점수 저장 로직
 app.post('/api/save-score', (req, res) => {
     const { match_date, player_name, game_1, game_2, game_3 } = req.body;
+    if (game_1 > 300 || game_2 > 300 || game_3 > 300) {
+        return res.status(400).send('잘못된 점수입니다. 점수는 최대 300점까지만 가능합니다.');
+    }
     const date = match_date || new Date().toISOString().slice(0, 10);
 
     const scores = [game_1, game_2, game_3]
