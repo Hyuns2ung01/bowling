@@ -57,6 +57,14 @@ async function updateRankings() {
 
 // [4] 점수 저장 및 결과 표시 (단 하나로 통합된 버전)
 async function submitData() {
+    const g1 = parseInt(document.getElementById('game_1').value) || 0;
+const g2 = parseInt(document.getElementById('game_2').value) || 0;
+const g3 = parseInt(document.getElementById('game_3').value) || 0;
+
+if (g1 > 300 || g2 > 300 || g3 > 300) {
+    alert("볼링 점수는 300점을 넘을 수 없습니다. (퍼펙트 게임이 만점입니다!)");
+    return; // 서버로 전송하지 않고 종료
+}
     const name = document.getElementById('playerName').value;
     const date = document.getElementById('matchDate').value;
     const g1 = document.getElementById('g1').value;
