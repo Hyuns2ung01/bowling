@@ -28,6 +28,27 @@ const db = mysql.createConnection({
     multipleStatements: true,
     ssl: { rejectUnauthorized: false }
 });
+
+// 자동 테이블 생성 로직
+const createTableQuery = `
+CREATE TABLE IF NOT EXISTS bowling_records (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    player_name VARCHAR(100) NOT NULL,
+    match_date DATE NOT NULL,
+    game_1 INT DEFAULT 0,
+    game_2 INT DEFAULT 0,
+    game_3 INT DEFAULT 0,
+    daily_average DECIMAL(5, 2) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);`;
+
+db.query(createTableQuery, (err) => {
+    if (err) {
+        console.error("테이블 생성 중 에러 발생:", err);
+    } else {
+        console.log("데이터베이스 테이블 확인 완료 (bowling_records)");
+    }
+});
 // 점수 저장 로직
 app.post('/api/save-score', (req, res) => {
     const { match_date, player_name, game_1, game_2, game_3 } = req.body;
