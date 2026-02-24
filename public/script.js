@@ -87,7 +87,6 @@ async function submitData() {
         });
 
         if (res.ok) {
-            alert("저장 성공!");
             const resultArea = document.getElementById('resultArea');
             const avgDisplay = document.getElementById('avgDisplay');
 
