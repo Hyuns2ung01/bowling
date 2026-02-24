@@ -74,7 +74,7 @@ async function submitData() {
     if (!name) return alert("이름을 입력해 주세요!");
 
     if (g1 > 300 || g2 > 300 || g3 > 300) {
-        alert("볼링 점수는 300점을 넘을 수 없습니다. (퍼펙트 게임이 만점입니다!)");
+        alert("응 안돼 돌아가 구라치지마쇼");
         return; 
     }
 
