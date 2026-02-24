@@ -9,7 +9,7 @@ app.use(bodyParser.json());
 app.use(session({
     secret: 'bowling-secret-key',
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: { maxAge: 1000 * 60 * 60 } // 1 hour
 }));
 
@@ -25,6 +25,7 @@ const db = mysql.createConnection({
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
+    multipleStatements: true,
     ssl: { rejectUnauthorized: false }
 });
 // 점수 저장 로직
@@ -188,11 +189,11 @@ app.get('/api/ranking/hall-of-fame', (req, res) => {
     });
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log('================================================');
     console.log(`볼링 관리 서버가 성공적으로 실행되었습니다!`);
-    console.log(`접속 주소: http://localhost:${PORT}`);
+    console.log(`접속 주소: http://0.0.0.0:${PORT}`);
     console.log('================================================');
 });
